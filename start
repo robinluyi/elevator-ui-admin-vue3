@@ -1,0 +1,7 @@
+#!bash
+nvm use lts/gallium
+npm config set registry https://registry.npmjs.org
+npm install -g pnpm
+pnpm install
+
+npm run dev
