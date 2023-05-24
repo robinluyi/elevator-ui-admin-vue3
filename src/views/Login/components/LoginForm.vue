@@ -16,7 +16,11 @@
         </el-form-item>
       </el-col>
       <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
-        <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
+        <el-form-item
+          v-if="loginData.tenantEnable === 'true'"
+          prop="tenantName"
+          v-show="hideElement"
+        >
           <el-input
             v-model="loginData.loginForm.tenantName"
             :placeholder="t('login.tenantNamePlaceholder')"
@@ -58,7 +62,7 @@
                 {{ t('login.remember') }}
               </el-checkbox>
             </el-col>
-            <el-col :offset="6" :span="12">
+            <el-col :offset="6" :span="12" v-show="hideElement">
               <el-link style="float: right" type="primary">{{ t('login.forgetPassword') }}</el-link>
             </el-col>
           </el-row>
@@ -82,7 +86,7 @@
         mode="pop"
         @success="handleLogin"
       />
-      <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
+      <el-col :span="24" style="padding-left: 10px; padding-right: 10px" v-show="hideElement">
         <el-form-item>
           <el-row :gutter="5" justify="space-between" style="width: 100%">
             <el-col :span="8">
@@ -109,8 +113,10 @@
           </el-row>
         </el-form-item>
       </el-col>
-      <el-divider content-position="center">{{ t('login.otherLogin') }}</el-divider>
-      <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
+      <el-divider content-position="center" v-show="hideElement">{{
+        t('login.otherLogin')
+      }}</el-divider>
+      <el-col :span="24" style="padding-left: 10px; padding-right: 10px" v-show="hideElement">
         <el-form-item>
           <div class="flex justify-between w-[100%]">
             <Icon
@@ -125,8 +131,8 @@
           </div>
         </el-form-item>
       </el-col>
-      <el-divider content-position="center">萌新必读</el-divider>
-      <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
+      <el-divider content-position="center" v-show="hideElement">萌新必读</el-divider>
+      <el-col :span="24" style="padding-left: 10px; padding-right: 10px" v-show="hideElement">
         <el-form-item>
           <div class="flex justify-between w-[100%]">
             <el-link href="https://doc.iocoder.cn/" target="_blank">📚开发指南</el-link>
@@ -171,6 +177,8 @@ const verify = ref()
 const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN)
+
+const hideElement = false
 
 const LoginRules = {
   tenantName: [required],
