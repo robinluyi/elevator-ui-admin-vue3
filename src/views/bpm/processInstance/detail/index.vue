@@ -41,6 +41,10 @@
             <Icon icon="ep:close" />
             不通过
           </el-button>
+          <el-button type="primary" @click="handleAudit(item, true)">
+            <Icon icon="ep:save" />
+            保存
+          </el-button>
           <el-button type="primary" @click="openTaskUpdateAssigneeForm(item.id)">
             <Icon icon="ep:edit" />
             转办
@@ -196,6 +200,8 @@ const getProcessInstance = async () => {
     }
     processInstance.value = data
 
+    console.log(data)
+
     // 设置表单信息
     const processDefinition = data.processDefinition
     if (processDefinition.formType === 10) {
@@ -228,6 +234,8 @@ const getTaskList = async () => {
     tasksLoad.value = true
     const data = await TaskApi.getTaskListByProcessInstanceId(id)
     tasks.value = []
+    console.log('所有task')
+    console.log(data)
     // 1.1 移除已取消的审批
     data.forEach((task) => {
       if (task.result !== 4) {
@@ -267,6 +275,8 @@ const getTaskList = async () => {
         reason: ''
       })
     })
+    console.log('my task')
+    console.log(runningTasks)
   } finally {
     tasksLoad.value = false
   }

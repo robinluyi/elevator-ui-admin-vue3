@@ -1,5 +1,12 @@
 import request from '@/config/axios'
 
+type part = {
+  name: string
+  unit: string
+  quantity: number
+  price: number
+}
+
 export type LeaveVO = {
   id: number
   result: number
@@ -9,6 +16,8 @@ export type LeaveVO = {
   startTime: string
   endTime: string
   createTime: string
+  parts: part[]
+  totalPrice: number
 }
 
 // 创建请假申请

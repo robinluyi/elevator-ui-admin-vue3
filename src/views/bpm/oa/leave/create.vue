@@ -37,6 +37,53 @@
     <el-form-item label="原因" prop="reason">
       <el-input v-model="formData.reason" type="textarea" placeholder="请输请假原因" />
     </el-form-item>
+
+    <div v-for="(part, index) in formData.parts" :key="'part' + index">
+      <el-card class="mb-20">
+        <Icon icon="ep:plus" class="mr-5px" /> Part {{ index + 1 }}
+        <div class="part-fields">
+          <el-form-item label="Part name" prop="name">
+            <el-input v-model="part.name" placeholder="Enter part name" />
+          </el-form-item>
+          <el-form-item label="Unit" prop="unit">
+            <el-input v-model="part.unit" placeholder="Enter unit" />
+          </el-form-item>
+          <el-form-item label="Quantity" prop="quantity">
+            <el-input-number v-model="part.quantity" :precision="0" :min="1" />
+          </el-form-item>
+          <el-form-item label="Unit price" prop="price">
+            <el-input-number v-model="part.price" :min="0" :step="0.01" :controls="false" />
+          </el-form-item>
+        </div>
+        <div class="part-actions">
+          <el-button
+            type="danger"
+            size="small"
+            :disabled="formData.parts.length === 1"
+            @click="removePart(index)"
+            >Remove</el-button
+          >
+        </div>
+      </el-card>
+    </div>
+    <el-button
+      v-show="formData.parts.length < 5"
+      type="primary"
+      icon="el-icon-plus"
+      @click="addPart()"
+      >Add part</el-button
+    >
+    <el-form-item label="Total price" prop="totalPrice">
+      <el-input-number
+        v-model="formData.totalPrice"
+        :min="0"
+        :step="0.01"
+        :precision="2"
+        :controls="false"
+        disabled
+      />
+    </el-form-item>
+
     <el-form-item>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
     </el-form-item>
@@ -55,7 +102,16 @@ const formData = ref({
   type: undefined,
   reason: undefined,
   startTime: undefined,
-  endTime: undefined
+  endTime: undefined,
+  totalPrice: undefined,
+  parts: [
+    {
+      name: undefined,
+      unit: undefined,
+      quantity: undefined,
+      price: undefined
+    }
+  ]
 })
 const formRules = reactive({
   type: [{ required: true, message: '请假类型不能为空', trigger: 'blur' }],
@@ -83,4 +139,41 @@ const submitForm = async () => {
     formLoading.value = false
   }
 }
+const addPart = () => {
+  const data = formData.value as unknown as LeaveApi.LeaveVO
+  data.parts.push({
+    name: '',
+    unit: '',
+    quantity: 1,
+    price: 0
+  })
+}
+const removePart = (index) => {
+  const data = formData.value as unknown as LeaveApi.LeaveVO
+  data.parts.splice(index, 1)
+  updateTotalPrice()
+}
+const updateTotalPrice = () => {
+  const data = formData.value as unknown as LeaveApi.LeaveVO
+  let totalPrice = 0
+  for (const part of data.parts) {
+    totalPrice += part.quantity * part.price
+  }
+  data.totalPrice = totalPrice
+}
+
+/**
+ * 将传进来的值赋值给formData
+ */
+watch(
+  () => formData.value.parts,
+  (data) => {
+    if (!data) return
+    updateTotalPrice()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
 </script>
