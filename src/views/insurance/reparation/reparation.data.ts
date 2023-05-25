@@ -8,12 +8,7 @@ export const rules = reactive({
   userNickname: [required],
   endusageDeptId: [required],
   elevtrId: [required],
-  maintainDeptId: [required],
-  partName: [required],
-  partUnitId: [required],
-  partUnitPirce: [required],
-  partQuantity: [required],
-  partTotal: [required]
+  maintainDeptId: [required]
 })
 
 // CrudSchema https://doc.iocoder.cn/vue3/crud-schema/
@@ -108,75 +103,6 @@ const crudSchemas = reactive<CrudSchema[]>([
     isSearch: true
   },
   {
-    label: '配件总价格',
-    field: 'totalPrice',
-    isSearch: false,
-    form: {
-      component: 'InputNumber',
-      value: 0
-    }
-  },
-  {
-    label: '配件名称',
-    field: 'partName',
-    isSearch: false
-  },
-  {
-    label: '单位',
-    field: 'partUnitId',
-    dictType: DICT_TYPE.ELEVTR_PART_UNIT,
-    dictClass: 'number',
-    isSearch: false
-  },
-  {
-    label: '单价',
-    field: 'partUnitPirce',
-    isSearch: false,
-    form: {
-      component: 'InputNumber',
-      value: 0
-    }
-  },
-  {
-    label: '数量',
-    field: 'partQuantity',
-    isSearch: false,
-    form: {
-      component: 'InputNumber',
-      value: 0
-    }
-  },
-  {
-    label: '小计',
-    field: 'partTotal',
-    isSearch: false
-  },
-  {
-    label: '小区照片',
-    field: 'communityPic',
-    isSearch: false
-  },
-  {
-    label: '单元照片',
-    field: 'unitPic',
-    isSearch: false
-  },
-  {
-    label: '电梯照片',
-    field: 'elevtrPic',
-    isSearch: false
-  },
-  {
-    label: '故障现场照片',
-    field: 'faultPic',
-    isSearch: false
-  },
-  {
-    label: '故障现场照片',
-    field: 'faultPic2',
-    isSearch: false
-  },
-  {
     label: '流程实例的编号',
     field: 'processInstanceId',
     isSearch: false
@@ -195,6 +121,15 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
     },
     isForm: false
+  },
+  {
+    label: '配件总价格',
+    field: 'totalPrice',
+    isSearch: true,
+    form: {
+      component: 'InputNumber',
+      value: 0
+    }
   },
   {
     label: '操作',

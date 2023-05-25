@@ -14,18 +14,8 @@ export interface ReparationVO {
   maintainDeptId: number
   maintainDeptName: string
   registrationId: string
-  totalPrice: number
-  partName: string
-  partUnitId: byte
-  partUnitPirce: number
-  partQuantity: number
-  partTotal: byte
-  communityPic: string
-  unitPic: string
-  elevtrPic: string
-  faultPic: string
-  faultPic2: string
   processInstanceId: string
+  totalPrice: number
 }
 
 // 查询电梯报修申请列表
