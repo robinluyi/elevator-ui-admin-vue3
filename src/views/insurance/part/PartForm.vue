@@ -8,8 +8,8 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import * as ReparationApi from '@/api/insurance/reparation'
-import { rules, allSchemas } from './reparation.data'
+import * as PartApi from '@/api/insurance/part'
+import { rules, allSchemas } from './part.data'
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
@@ -28,7 +28,7 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      const data = await ReparationApi.getReparation(id)
+      const data = await PartApi.getPart(id)
       formRef.value.setValues(data)
     } finally {
       formLoading.value = false
@@ -47,12 +47,12 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formRef.value.formModel as ReparationApi.ReparationVO
+    const data = formRef.value.formModel as PartApi.PartVO
     if (formType.value === 'create') {
-      await ReparationApi.createReparation(data)
+      await PartApi.createPart(data)
       message.success(t('common.createSuccess'))
     } else {
-      await ReparationApi.updateReparation(data)
+      await PartApi.updatePart(data)
       message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false

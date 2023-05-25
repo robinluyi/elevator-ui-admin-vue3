@@ -8,7 +8,7 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['insurance:reparation:create']"
+          v-hasPermi="['insurance:faultinfo:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
@@ -33,14 +33,14 @@
           link
           type="primary"
           @click="openForm('update', row.id)"
-          v-hasPermi="['insurance:reparation:update']"
+          v-hasPermi="['insurance:faultinfo:update']"
         >
           编辑
         </el-button>
         <el-button
           link
           type="danger"
-          v-hasPermi="['insurance:reparation:delete']"
+          v-hasPermi="['insurance:faultinfo:delete']"
           @click="handleDelete(row.id)"
         >
           删除
@@ -50,19 +50,19 @@
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
-  <ReparationForm ref="formRef" @success="getList" />
+  <FaultinfoForm ref="formRef" @success="getList" />
 </template>
-<script setup lang="ts" name="Reparation">
-import { allSchemas } from './reparation.data'
-import * as ReparationApi from '@/api/insurance/reparation'
-import ReparationForm from './ReparationForm.vue'
+<script setup lang="ts" name="Faultinfo">
+import { allSchemas } from './faultinfo.data'
+import * as FaultinfoApi from '@/api/insurance/faultinfo'
+import FaultinfoForm from './FaultinfoForm.vue'
 
 // tableObject：表格的属性对象，可获得分页大小、条数等属性
 // tableMethods：表格的操作对象，可进行获得分页、删除记录等操作
 // 详细可见：https://doc.iocoder.cn/vue3/crud-schema/
 const { tableObject, tableMethods } = useTable({
-  getListApi: ReparationApi.getReparationPage, // 分页接口
-  delListApi: ReparationApi.deleteReparation // 删除接口
+  getListApi: FaultinfoApi.getFaultinfoPage, // 分页接口
+  delListApi: FaultinfoApi.deleteFaultinfo // 删除接口
 })
 // 获得表格的各种操作
 const { getList, setSearchParams } = tableMethods
