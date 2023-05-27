@@ -32,7 +32,8 @@
             />
           </el-form-item>
         </el-form>
-        <div v-if="!item.customPath" style="margin-left: 10%; margin-bottom: 20px; font-size: 14px">
+        <span class="el-icon-picture-outline">在这里自定义按钮【{{ item.paths }}】</span>
+        <div style="margin-left: 10%; margin-bottom: 20px; font-size: 14px">
           <el-button type="success" @click="handleAudit(item, true)">
             <Icon icon="ep:select" />
             通过
@@ -41,34 +42,21 @@
             <Icon icon="ep:close" />
             不通过
           </el-button>
-          <div v-if="false"
-            ><!-- remove unused button -->
-            <el-button type="primary" @click="handleAudit(item, true)">
-              <Icon icon="ep:save" />
-              保存
-            </el-button>
-            <el-button type="primary" @click="openTaskUpdateAssigneeForm(item.id)">
-              <Icon icon="ep:edit" />
-              转办
-            </el-button>
-            <el-button type="primary" @click="handleDelegate(item)">
-              <Icon icon="ep:position" />
-              委派
-            </el-button>
-            <el-button type="warning" @click="handleBack(item)">
-              <Icon icon="ep:back" />
-              回退
-            </el-button>
-          </div>
-        </div>
-        <div v-if="item.customPath" style="margin-left: 10%; margin-bottom: 20px; font-size: 14px">
-          <el-button
-            v-for="button in item.buttons"
-            :key="button.path"
-            :type="button.type"
-            @click="handleCustomButton(item, button)"
-          >
-            <Icon :icon="button.icon" /> {{ button.text }}
+          <el-button type="primary" @click="handleAudit(item, true)">
+            <Icon icon="ep:save" />
+            保存
+          </el-button>
+          <el-button type="primary" @click="openTaskUpdateAssigneeForm(item.id)">
+            <Icon icon="ep:edit" />
+            转办
+          </el-button>
+          <el-button type="primary" @click="handleDelegate(item)">
+            <Icon icon="ep:position" />
+            委派
+          </el-button>
+          <el-button type="warning" @click="handleBack(item)">
+            <Icon icon="ep:back" />
+            回退
           </el-button>
         </div>
       </el-col>
@@ -117,7 +105,6 @@ import type { ApiAttrs } from '@form-create/element-ui/types/config'
 import * as DefinitionApi from '@/api/bpm/definition'
 import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 import * as TaskApi from '@/api/bpm/task'
-// import * as ButtonApi from '@/api/bpm/button'
 import TaskUpdateAssigneeForm from './TaskUpdateAssigneeForm.vue'
 import ProcessInstanceBpmnViewer from './ProcessInstanceBpmnViewer.vue'
 import ProcessInstanceTaskList from './ProcessInstanceTaskList.vue'
@@ -163,9 +150,7 @@ const handleAudit = async (task, pass) => {
   // 2.1 提交审批
   const data = {
     id: task.id,
-    reason: auditForms.value[index].reason,
-    path: task.path,
-    step: task.step
+    reason: auditForms.value[index].reason
   }
   if (pass) {
     await TaskApi.approveTask(data)
@@ -176,20 +161,6 @@ const handleAudit = async (task, pass) => {
   }
   // 2.2 加载最新数据
   getDetail()
-}
-const handleCustomButton = async (task, button) => {
-  task.path = button.path
-  task.step = button.step
-  if (button.path == 0) {
-    // 0 作为取消或结速流程.
-    handleAudit(task, false)
-  } else if (button.path == 1) {
-    // 1 作为通过流程
-    handleAudit(task, true)
-  } else {
-    //-1, -2 为定制后退流程.
-    handleAudit(task, true)
-  }
 }
 
 /** 转派审批人 */
@@ -269,13 +240,11 @@ const getTaskList = async () => {
     console.log(data)
     // 1.1 获取task对应的扩展属性中的流程信息
     data.forEach((task) => {
-      task.path = 1
-      task.step = ''
-      if (task.extAttribute && task.extAttribute.buttons) {
+      if (task.extAttribute && task.extAttribute.another) {
         try {
-          let buttons = JSON.parse(task.extAttribute.buttons)
+          let paths = JSON.parse(task.extAttribute.another)
+          task.paths = paths
           task.customPath = true
-          task.buttons = buttons
         } catch {}
       }
     })

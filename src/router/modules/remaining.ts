@@ -327,6 +327,53 @@ const remainingRouter: AppRouteRecordRaw[] = [
           title: '查看 OA 请假',
           activeMenu: '/bpm/oa/leave'
         }
+      },
+      {
+        path: '/insurance/reparationpart/create',
+        component: () => import('@/views/insurance/reparationpart/create.vue'),
+        name: 'OAReparationpartCreate',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '发起报修单',
+          activeMenu: '/insurance/reparation/index'
+        }
+      }
+    ]
+  },
+  {
+    path: '/insurance',
+    component: Layout,
+    name: 'insurance',
+    meta: {
+      hidden: true
+    },
+    redirect: 'noredirect',
+    children: [
+      {
+        path: '/insurance/reparationpart/create',
+        component: () => import('@/views/insurance/reparationpart/create.vue'),
+        name: 'OAReparationpartCreate',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '发起报修单',
+          activeMenu: '/insurance/reparation/index'
+        }
+      },
+      {
+        path: '/insurance/reparationpart/detail',
+        component: () => import('@/views/insurance/reparationpart/detail.vue'),
+        name: 'ReparationpartDetail',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '查看保修单',
+          activeMenu: '/insurance/reparation/index'
+        }
       }
     ]
   },
