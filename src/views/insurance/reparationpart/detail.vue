@@ -1,0 +1,89 @@
+<template>
+  <ContentWrap>
+    <el-descriptions :column="1" border>
+      <el-descriptions-item label="维修表单号"> {{ detailData.id }} </el-descriptions-item>
+      <el-descriptions-item label="申请人的用户编号">
+        {{ detailData.userId }}
+      </el-descriptions-item>
+      <el-descriptions-item label="提交人所在单位">
+        {{ detailData.userDeptId }}
+      </el-descriptions-item>
+      <el-descriptions-item label="报险人姓名">
+        {{ detailData.userNickname }}
+      </el-descriptions-item>
+      <el-descriptions-item label="报险人手机号码">
+        {{ detailData.userMobile }}
+      </el-descriptions-item>
+      <el-descriptions-item label="使用单位编号">
+        {{ detailData.endusageDeptId }}
+      </el-descriptions-item>
+      <el-descriptions-item label="使用单位">
+        {{ detailData.endusageDeptName }}
+      </el-descriptions-item>
+      <el-descriptions-item label="使用单位负责人">
+        {{ detailData.endusageDeptManagerId }}
+      </el-descriptions-item>
+      <el-descriptions-item label="梯号"> {{ detailData.elevtrNumber }} </el-descriptions-item>
+      <el-descriptions-item label="维保单位编号">
+        {{ detailData.maintainDeptId }}
+      </el-descriptions-item>
+      <el-descriptions-item label="维保单位">
+        {{ detailData.maintainDeptName }}
+      </el-descriptions-item>
+      <el-descriptions-item label="注册代码">
+        {{ detailData.registrationId }}
+      </el-descriptions-item>
+      <el-descriptions-item label="创建时间">
+        {{ formatDate(detailData.createTime, 'YYYY-MM-DD') }}
+      </el-descriptions-item>
+      <el-descriptions-item label="配件总价格"> {{ detailData.totalPrice }} </el-descriptions-item>
+    </el-descriptions>
+  </ContentWrap>
+  <div v-for="(part, index) in detailData.parts" :key="'part' + index">
+    <ContentWrap>
+      <div class="part-fields">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="零件名称"> {{ part.partName }} </el-descriptions-item>
+          <el-descriptions-item label="数量">
+            {{ part.partQuantity }}
+          </el-descriptions-item>
+          <el-descriptions-item label="单位">
+            <dict-tag :type="DICT_TYPE.ELEVTR_PART_UNIT" :value="part.partUnitId" />
+          </el-descriptions-item>
+          <el-descriptions-item label="单价"> {{ part.partUnitPirce }} 元 </el-descriptions-item>
+          <el-descriptions-item label="小计"> {{ part.partTotal }} </el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </ContentWrap>
+  </div>
+</template>
+<script lang="ts" name="BpmOALeaveDetail" setup>
+import { DICT_TYPE } from '@/utils/dict'
+import { formatDate } from '@/utils/formatTime'
+import { propTypes } from '@/utils/propTypes'
+import * as ReparationpartAPI from '@/api/insurance/reparationpart'
+const { query } = useRoute() // 查询参数
+
+const props = defineProps({
+  id: propTypes.number.def(undefined)
+})
+const detailLoading = ref(false) // 表单的加载中
+const detailData = ref<any>({}) // 详情数据
+const queryId = query.id as unknown as number // 从 URL 传递过来的 id 编号
+
+/** 获得数据 */
+const getInfo = async () => {
+  detailLoading.value = true
+  try {
+    detailData.value = await ReparationpartAPI.getReparationPart(props.id || queryId)
+  } finally {
+    detailLoading.value = false
+  }
+}
+defineExpose({ open: getInfo }) // 提供 open 方法，用于打开弹窗
+
+/** 初始化 **/
+onMounted(() => {
+  getInfo()
+})
+</script>
