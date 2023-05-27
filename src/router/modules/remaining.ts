@@ -371,7 +371,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
           noCache: true,
           hidden: true,
           canTo: true,
-          title: '查看保修单',
+          title: '查看报修单',
           activeMenu: '/insurance/reparation/index'
         }
       }
