@@ -1,7 +1,7 @@
 <template>
   <ContentWrap>
     <el-descriptions :column="1" border>
-      <el-descriptions-item label="维修表单号"> {{ detailData.id }} </el-descriptions-item>
+      <el-descriptions-item label="维修流水单号"> {{ detailData.id }} </el-descriptions-item>
       <el-descriptions-item label="申请人的用户编号">
         {{ detailData.userId }}
       </el-descriptions-item>
@@ -52,6 +52,35 @@
           </el-descriptions-item>
           <el-descriptions-item label="单价"> {{ part.partUnitPirce }} 元 </el-descriptions-item>
           <el-descriptions-item label="小计"> {{ part.partTotal }} </el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </ContentWrap>
+  </div>
+  <div v-for="(fault, index) in detailData.faults" :key="'part' + index">
+    <ContentWrap>
+      <div class="part-fields">
+        <el-descriptions :column="1" border direction="horizontal">
+          <el-descriptions-item label="小区照片">
+            <el-image style="width: 200px; height: 200px" :src="fault.communityPic" fit="contain" />
+          </el-descriptions-item>
+          <el-descriptions-item label="单元照片">
+            <el-image style="width: 200px; height: 200px" :src="fault.unitPic" fit="contain" />
+          </el-descriptions-item>
+          <el-descriptions-item label="电梯照片">
+            <el-image style="width: 200px; height: 200px" :src="fault.elevtrPic" fit="contain" />
+          </el-descriptions-item>
+          <el-descriptions-item label="故障现场照片1">
+            <el-image style="width: 200px; height: 200px" :src="fault.faultPic" fit="contain" />
+          </el-descriptions-item>
+          <el-descriptions-item label="故障现场照片1">
+            <el-image style="width: 200px; height: 200px" :src="fault.faultPic2" fit="contain" />
+          </el-descriptions-item>
+          <el-descriptions-item label="故障现场照片1">
+            <el-image style="width: 200px; height: 200px" :src="fault.faultPic3" fit="contain" />
+          </el-descriptions-item>
+          <el-descriptions-item label="故障现场照片1">
+            <el-image style="width: 200px; height: 200px" :src="fault.faultPic4" fit="contain" />
+          </el-descriptions-item>
         </el-descriptions>
       </div>
     </ContentWrap>

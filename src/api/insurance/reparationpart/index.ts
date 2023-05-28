@@ -10,6 +10,18 @@ interface PartVO {
   partTotal: number
   processInstanceId: string
 }
+interface FaultVO {
+  id: number
+  reparationId: number
+  communityPic: string
+  unitPic: string
+  elevtrPic: string
+  faultPic: string
+  faultPic2: string
+  faultPic3: string
+  faultPic4: string
+  processInstanceId: string
+}
 export interface ReparationPartVO {
   id: number
   userId: number
@@ -27,6 +39,7 @@ export interface ReparationPartVO {
   processInstanceId: string
   totalPrice: number
   parts: PartVO[]
+  faults: FaultVO[]
 }
 
 // 查询电梯报修申请列表
