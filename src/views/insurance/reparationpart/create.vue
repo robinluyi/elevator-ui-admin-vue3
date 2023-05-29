@@ -7,31 +7,52 @@
     v-loading="formLoading"
   >
     <el-card class="mb-20">
-      <el-form-item label="申请人的用户编号" prop="userId">
+      <!-- <el-form-item label="申请人的用户编号" prop="userId">
         <el-input-number
           v-model="formData.userId"
           placeholder="请输入申请人的用户编号"
           disabled
           :controls="false"
         />
-      </el-form-item>
-      <el-form-item label="提交人所在单位" prop="userDeptId">
-        <el-input-number v-model="formData.userDeptId" placeholder="请输入提交人所在单位" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="报险人姓名" prop="userNickname">
         <el-input v-model="formData.userNickname" placeholder="请输入报险人姓名" disabled />
       </el-form-item>
       <el-form-item label="报险人手机号码" prop="userMobile">
         <el-input v-model="formData.userMobile" placeholder="请输入报险人手机号码" maxlength="11" />
       </el-form-item>
-      <el-form-item label="使用单位编号" prop="endusageDeptId">
-        <el-input v-model="formData.endusageDeptId" placeholder="请输入使用单位编号" />
+      <el-form-item label="报险人所在单位" prop="userDeptName">
+        <el-input v-model="formData.userDeptName" placeholder="" disabled />
       </el-form-item>
-      <el-form-item label="使用单位" prop="endusageDeptName">
+      <el-form-item label="使用单位" prop="endusageDeptId">
+        <el-select
+          v-model="formData.endusageDeptId"
+          placeholder="请选择使用单位"
+          @change="onEndUsageChanged"
+        >
+          <el-option
+            v-for="endusage in endusageDeptList"
+            :key="endusage.id"
+            :label="endusage.name"
+            :value="endusage.id"
+          />
+        </el-select>
+      </el-form-item>
+      <!-- <el-form-item label="使用单位" prop="endusageDeptName">
         <el-input v-model="formData.endusageDeptName" placeholder="请输入使用单位" />
+      </el-form-item> -->
+      <el-form-item label="使用单位负责人" prop="endusageDeptManagerName">
+        <el-input
+          v-model="formData.endusageDeptManagerName"
+          placeholder="请输入使用单位负责人"
+          disabled
+        />
       </el-form-item>
-      <el-form-item label="使用单位负责人" prop="endusageDeptManagerId">
-        <el-input v-model="formData.endusageDeptManagerId" placeholder="请输入使用单位负责人" />
+      <el-form-item label="使用单位负责人手机号码" prop="endusageDeptManagerPhone">
+        <el-input
+          v-model="formData.endusageDeptManagerPhone"
+          placeholder="请输入使用单位负责人手机号码"
+        />
       </el-form-item>
       <el-form-item label="电梯id" prop="elevtrId">
         <el-input v-model="formData.elevtrId" placeholder="请输入电梯id" />
@@ -39,11 +60,19 @@
       <el-form-item label="梯号" prop="elevtrNumber">
         <el-input v-model="formData.elevtrNumber" placeholder="请输入梯号" />
       </el-form-item>
-      <el-form-item label="维保单位编号" prop="maintainDeptId">
-        <el-input v-model="formData.maintainDeptId" placeholder="请输入维保单位编号" />
-      </el-form-item>
-      <el-form-item label="维保单位" prop="maintainDeptName">
-        <el-input v-model="formData.maintainDeptName" placeholder="请输入维保单位" />
+      <el-form-item label="维保单位" prop="maintainDeptId">
+        <el-select
+          v-model="formData.maintainDeptId"
+          placeholder="请选择维保单位"
+          @change="onMaintainDeptChanged"
+        >
+          <el-option
+            v-for="maintain in maintainDeptList"
+            :key="maintain.id"
+            :label="maintain.name"
+            :value="maintain.id"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="注册代码" prop="registrationId">
         <el-input v-model="formData.registrationId" placeholder="请输入注册代码" />
@@ -165,6 +194,9 @@ import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as ReparationpartAPI from '@/api/insurance/reparationpart'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
+import { getUserProfile } from '@/api/system/user/profile'
+import * as DeptApi from '@/api/system/dept'
+import * as UserApi from '@/api/system/user'
 
 //import {createReparationPart, ReparationPartVO} from "@/api/insurance/reparationpart";
 const message = useMessage() // 消息弹窗
@@ -181,11 +213,14 @@ const formData = ref({
   id: undefined,
   userId: userId,
   userDeptId: undefined,
+  userDeptName: undefined,
   userNickname: userName,
   userMobile: user.user.mobile,
   endusageDeptId: undefined,
   endusageDeptName: undefined,
   endusageDeptManagerId: undefined,
+  endusageDeptManagerName: undefined,
+  endusageDeptManagerPhone: undefined,
   elevtrId: undefined,
   elevtrNumber: undefined,
   maintainDeptId: undefined,
@@ -228,7 +263,8 @@ const formRules = reactive({
   partName: [{ required: true, message: '零件名称不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
-
+const maintainDeptList = ref<any[]>([]) // 维保公司列表
+const endusageDeptList = ref<any[]>([]) // 电梯使用单位列表
 /** 提交表单 */
 const submitForm = async () => {
   // 校验表单
@@ -254,6 +290,7 @@ const submitForm = async () => {
   }
 }
 const addPart = () => {
+  console.log(user)
   const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
   data.parts.push({
     partName: '',
@@ -314,11 +351,38 @@ watch(
     immediate: true
   }
 )
+/** 获得数据 */
+const getInfo = async () => {
+  const userProfile = await getUserProfile()
+  formData.value.userMobile = userProfile.mobile
+  formData.value.userDeptId = userProfile.dept.id
+  formData.value.userDeptName = userProfile.dept.name
+  // formData.value.maintainDeptId = userProfile.dept.id
+  // formData.value.maintainDeptName = userProfile.dept.name
+
+  // 加载用户列表
+  maintainDeptList.value = await DeptApi.getMaintainDeptList()
+  endusageDeptList.value = await DeptApi.getEndusageDeptList()
+}
+const onMaintainDeptChanged = (id?: number) => {
+  const found = maintainDeptList.value.find((v) => v.id === id)
+  if (found) {
+    formData.value.maintainDeptName = found.name
+  }
+}
+const onEndUsageChanged = (id?: number) => {
+  const found = endusageDeptList.value.find((v) => v.id === id)
+  if (found) {
+    formData.value.endusageDeptName = found.name
+    formData.value.endusageDeptManagerId = found.leaderUserId
+    UserApi.getUser(found.leaderUserId).then((enduser) => {
+      formData.value.endusageDeptManagerName = enduser.nickname
+      formData.value.endusageDeptManagerPhone = enduser.mobile
+    })
+  }
+}
 /** 初始化 **/
 onMounted(() => {
   getInfo()
 })
-
-/** 获得数据 */
-const getInfo = async () => {}
 </script>

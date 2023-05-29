@@ -16,6 +16,14 @@ export interface DeptVO {
 export const getSimpleDeptList = async (): Promise<DeptVO[]> => {
   return await request.get({ url: '/system/dept/list-all-simple' })
 }
+//getMaintainDeptList
+export const getMaintainDeptList = async (): Promise<DeptVO[]> => {
+  return await request.get({ url: '/system/dept/list/maintain' })
+}
+//getEndusageDeptList
+export const getEndusageDeptList = async (): Promise<DeptVO[]> => {
+  return await request.get({ url: '/system/dept/list/endusage' })
+}
 
 // 查询部门列表
 export const getDeptPage = async (params: PageParam) => {

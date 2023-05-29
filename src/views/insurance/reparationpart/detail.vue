@@ -2,11 +2,11 @@
   <ContentWrap>
     <el-descriptions :column="1" border>
       <el-descriptions-item label="维修流水单号"> {{ detailData.id }} </el-descriptions-item>
-      <el-descriptions-item label="申请人的用户编号">
+      <!-- <el-descriptions-item label="申请人的用户编号">
         {{ detailData.userId }}
-      </el-descriptions-item>
+      </el-descriptions-item> -->
       <el-descriptions-item label="提交人所在单位">
-        {{ detailData.userDeptId }}
+        {{ detailData.userDeptName }}
       </el-descriptions-item>
       <el-descriptions-item label="报险人姓名">
         {{ detailData.userNickname }}
@@ -20,8 +20,14 @@
       <el-descriptions-item label="使用单位">
         {{ detailData.endusageDeptName }}
       </el-descriptions-item>
-      <el-descriptions-item label="使用单位负责人">
+      <!-- <el-descriptions-item label="使用单位负责人编号">
         {{ detailData.endusageDeptManagerId }}
+      </el-descriptions-item> -->
+      <el-descriptions-item label="使用单位负责人姓名">
+        {{ detailData.endusageDeptManagerName }}
+      </el-descriptions-item>
+      <el-descriptions-item label="使用单位负责人手机号码">
+        {{ detailData.endusageDeptManagerPhone }}
       </el-descriptions-item>
       <el-descriptions-item label="梯号"> {{ detailData.elevtrNumber }} </el-descriptions-item>
       <el-descriptions-item label="维保单位编号">
@@ -35,6 +41,9 @@
       </el-descriptions-item>
       <el-descriptions-item label="创建时间">
         {{ formatDate(detailData.createTime, 'YYYY-MM-DD') }}
+      </el-descriptions-item>
+      <el-descriptions-item label="result">
+        {{ detailData.result }}
       </el-descriptions-item>
       <el-descriptions-item label="配件总价格"> {{ detailData.totalPrice }} </el-descriptions-item>
     </el-descriptions>
@@ -91,6 +100,9 @@ import { DICT_TYPE } from '@/utils/dict'
 import { formatDate } from '@/utils/formatTime'
 import { propTypes } from '@/utils/propTypes'
 import * as ReparationpartAPI from '@/api/insurance/reparationpart'
+import * as UserApi from '@/api/system/user'
+import * as DeptApi from '@/api/system/dept'
+
 const { query } = useRoute() // 查询参数
 
 const props = defineProps({
@@ -105,6 +117,13 @@ const getInfo = async () => {
   detailLoading.value = true
   try {
     detailData.value = await ReparationpartAPI.getReparationPart(props.id || queryId)
+    UserApi.getUser(detailData.value.endusageDeptManagerId).then((enduser) => {
+      detailData.value.endusageDeptManagerName = enduser.nickname
+      detailData.value.endusageDeptManagerPhone = enduser.mobile
+    })
+    DeptApi.getDept(detailData.value.userDeptId).then((dept) => {
+      detailData.value.userDeptName = dept.name
+    })
   } finally {
     detailLoading.value = false
   }
