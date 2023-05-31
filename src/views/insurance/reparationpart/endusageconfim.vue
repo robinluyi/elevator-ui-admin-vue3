@@ -83,29 +83,19 @@
     </el-card>
 
     <el-form-item>
-      <el-button v-show="formData.parts.length < 50" type="primary" @click="addPart()"
-        >添加零件
-      </el-button>
-      <el-button v-show="formData.faults.length < 50" type="primary" @click="addFault()"
-        >添加故障照片
-      </el-button>
-      <el-button @click="editForm('update')" type="primary" :disabled="formLoading"
-        >保存报修</el-button
-      >
+      <el-button @click="editForm('update')" type="primary" :disabled="formLoading">保存</el-button>
       <el-button @click="editForm('submit')" type="primary" :disabled="formLoading"
-        >提交报修</el-button
+        >物业确认</el-button
       >
     </el-form-item>
   </el-form>
 </template>
 <script setup name="BpmOALeaveCreate" lang="ts">
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as ReparationpartAPI from '@/api/insurance/reparationpart'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 import { propTypes } from '@/utils/propTypes'
 import * as DeptApi from '@/api/system/dept'
-import * as UserApi from '@/api/system/user'
 
 //import {createReparationPart, ReparationPartVO} from "@/api/insurance/reparationpart";
 const message = useMessage() // 消息弹窗
@@ -212,68 +202,6 @@ const editForm = async (action) => {
     formLoading.value = false
   }
 }
-const addPart = () => {
-  console.log(user)
-  const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
-  data.parts.push({
-    partName: '',
-    partUnitId: 1,
-    partUnitPirce: 1,
-    partQuantity: 0,
-    partTotal: 0,
-    id: 0,
-    reparationId: 0,
-    processInstanceId: ''
-  })
-}
-const removeFault = (index) => {
-  const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
-  data.faults.splice(index, 1)
-}
-const addFault = () => {
-  const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
-  data.faults.push({
-    id: 0,
-    reparationId: 0,
-    communityPic: '',
-    unitPic: '',
-    elevtrPic: '',
-    faultPic: '',
-    faultPic2: '',
-    faultPic3: '',
-    faultPic4: '',
-    processInstanceId: ''
-  })
-}
-const removePart = (index) => {
-  const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
-  data.parts.splice(index, 1)
-  updateTotalPrice()
-}
-const updateTotalPrice = () => {
-  const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
-  let totalPrice = 0
-  for (const part of data.parts) {
-    part.partTotal = part.partUnitPirce * part.partQuantity
-    totalPrice += part.partTotal
-  }
-  data.totalPrice = totalPrice
-}
-
-/**
- * 将传进来的值赋值给formData
- */
-watch(
-  () => formData.value.parts,
-  (data) => {
-    if (!data) return
-    updateTotalPrice()
-  },
-  {
-    deep: true,
-    immediate: true
-  }
-)
 
 /** 获得数据 */
 const getInfo = async () => {
@@ -303,17 +231,7 @@ const onMaintainDeptChanged = (id?: number) => {
     formData.value.maintainDeptName = found.name
   }
 }
-const onEndUsageChanged = (id?: number) => {
-  const found = endusageDeptList.value.find((v) => v.id === id)
-  if (found) {
-    formData.value.endusageDeptName = found.name
-    formData.value.endusageDeptManagerId = found.leaderUserId
-    UserApi.getUser(found.leaderUserId).then((enduser) => {
-      formData.value.endusageDeptManagerName = enduser.nickname
-      formData.value.endusageDeptManagerPhone = enduser.mobile
-    })
-  }
-}
+
 /** 初始化 **/
 onMounted(() => {
   getInfo()

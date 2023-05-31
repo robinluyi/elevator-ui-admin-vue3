@@ -390,7 +390,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
       {
         path: '/insurance/reparationpart/postconfirm',
         component: () => import('@/views/insurance/reparationpart/postconfirm.vue'),
-        name: 'ReparationpartEdit',
+        name: 'ReparationpartPostConfirm',
         meta: {
           noCache: true,
           hidden: true,
@@ -402,7 +402,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
       {
         path: '/insurance/reparationpart/endusageconfim',
         component: () => import('@/views/insurance/reparationpart/endusageconfim.vue'),
-        name: 'ReparationpartEdit',
+        name: 'ReparationpartEndusageConfirm',
         meta: {
           noCache: true,
           hidden: true,

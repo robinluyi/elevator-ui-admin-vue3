@@ -40,6 +40,7 @@ export interface ReparationPartVO {
   totalPrice: number
   parts: PartVO[]
   faults: FaultVO[]
+  result: number
 }
 
 // 查询电梯报修申请列表
