@@ -374,6 +374,42 @@ const remainingRouter: AppRouteRecordRaw[] = [
           title: '查看报修单',
           activeMenu: '/insurance/reparation/index'
         }
+      },
+      {
+        path: '/insurance/reparationpart/edit',
+        component: () => import('@/views/insurance/reparationpart/edit.vue'),
+        name: 'ReparationpartEdit',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '补充报修单',
+          activeMenu: '/insurance/reparation/index'
+        }
+      },
+      {
+        path: '/insurance/reparationpart/postconfirm',
+        component: () => import('@/views/insurance/reparationpart/postconfirm.vue'),
+        name: 'ReparationpartEdit',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '维修后确认',
+          activeMenu: '/insurance/reparation/index'
+        }
+      },
+      {
+        path: '/insurance/reparationpart/endusageconfim',
+        component: () => import('@/views/insurance/reparationpart/endusageconfim.vue'),
+        name: 'ReparationpartEdit',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '物业确认',
+          activeMenu: '/insurance/reparation/index'
+        }
       }
     ]
   },

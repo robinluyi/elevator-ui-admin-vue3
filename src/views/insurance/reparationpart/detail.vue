@@ -42,8 +42,8 @@
       <el-descriptions-item label="创建时间">
         {{ formatDate(detailData.createTime, 'YYYY-MM-DD') }}
       </el-descriptions-item>
-      <el-descriptions-item label="result">
-        {{ detailData.result }}
+      <el-descriptions-item label="当前状态">
+        <dict-tag :type="DICT_TYPE.BPM_PROCESS_INSTANCE_RESULT" :value="detailData.result" />
       </el-descriptions-item>
       <el-descriptions-item label="配件总价格"> {{ detailData.totalPrice }} </el-descriptions-item>
     </el-descriptions>
@@ -53,14 +53,15 @@
       <div class="part-fields">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="零件名称"> {{ part.partName }} </el-descriptions-item>
-          <el-descriptions-item label="数量">
+          <el-descriptions-item label="数量 单位">
             {{ part.partQuantity }}
-          </el-descriptions-item>
-          <el-descriptions-item label="单位">
             <dict-tag :type="DICT_TYPE.ELEVTR_PART_UNIT" :value="part.partUnitId" />
           </el-descriptions-item>
+          <!-- <el-descriptions-item label="单位">
+           
+          </el-descriptions-item> -->
           <el-descriptions-item label="单价"> {{ part.partUnitPirce }} 元 </el-descriptions-item>
-          <el-descriptions-item label="小计"> {{ part.partTotal }} </el-descriptions-item>
+          <el-descriptions-item label="小计"> {{ part.partTotal }} 元 </el-descriptions-item>
         </el-descriptions>
       </div>
     </ContentWrap>
@@ -100,8 +101,8 @@ import { DICT_TYPE } from '@/utils/dict'
 import { formatDate } from '@/utils/formatTime'
 import { propTypes } from '@/utils/propTypes'
 import * as ReparationpartAPI from '@/api/insurance/reparationpart'
-import * as UserApi from '@/api/system/user'
-import * as DeptApi from '@/api/system/dept'
+// import * as UserApi from '@/api/system/user'
+// import * as DeptApi from '@/api/system/dept'
 
 const { query } = useRoute() // 查询参数
 
@@ -117,13 +118,13 @@ const getInfo = async () => {
   detailLoading.value = true
   try {
     detailData.value = await ReparationpartAPI.getReparationPart(props.id || queryId)
-    UserApi.getUser(detailData.value.endusageDeptManagerId).then((enduser) => {
-      detailData.value.endusageDeptManagerName = enduser.nickname
-      detailData.value.endusageDeptManagerPhone = enduser.mobile
-    })
-    DeptApi.getDept(detailData.value.userDeptId).then((dept) => {
-      detailData.value.userDeptName = dept.name
-    })
+    // UserApi.getUser(detailData.value.endusageDeptManagerId).then((enduser) => {
+    //   detailData.value.endusageDeptManagerName = enduser.nickname
+    //   detailData.value.endusageDeptManagerPhone = enduser.mobile
+    // })
+    // DeptApi.getDept(detailData.value.userDeptId).then((dept) => {
+    //   detailData.value.userDeptName = dept.name
+    // })
   } finally {
     detailLoading.value = false
   }

@@ -81,65 +81,7 @@
         <el-input v-model="formData.totalPrice" placeholder="" disabled />
       </el-form-item>
     </el-card>
-    <div v-for="(part, index) in formData.parts" :key="'part' + index">
-      <el-card class="mb-20">
-        <!-- <Icon icon="ep:plus" class="mr-5px" /> Part {{ index + 1 }} -->
-        <div class="part-fields">
-          <el-form-item
-            label="零件名称"
-            :prop="'parts.' + index + '.partName'"
-            :rules="formRules.partName"
-          >
-            <el-input v-model="part.partName" placeholder="请输入零件名称" />
-          </el-form-item>
-          <el-form-item label="单位" prop="part.partUnitId">
-            <el-select v-model="part.partUnitId" placeholder="请选择单位" clearable>
-              <el-option
-                v-for="dict in getIntDictOptions(DICT_TYPE.ELEVTR_PART_UNIT)"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="单价" prop="part.partUnitPirce">
-            <el-input-number
-              v-model="part.partUnitPirce"
-              :min="0"
-              :precision="0"
-              :controls="false"
-            />
-          </el-form-item>
-          <el-form-item label="数量" prop="part.partQuantity">
-            <el-input-number
-              v-model="part.partQuantity"
-              :precision="0"
-              :min="0"
-              :controls="false"
-            />
-          </el-form-item>
-          <el-form-item label="小计" prop="part.partTotal">
-            <el-input-number
-              v-model="part.partTotal"
-              :min="0"
-              :step="0.01"
-              :controls="false"
-              disabled
-            />
-          </el-form-item>
 
-          <el-form-item style="float: right">
-            <el-button
-              type="danger"
-              size="small"
-              :disabled="formData.parts.length === 1"
-              @click="removePart(index)"
-              >移除</el-button
-            >
-          </el-form-item>
-        </div>
-      </el-card>
-    </div>
     <div v-for="(fault, index) in formData.faults" :key="'fault' + index">
       <el-card class="mb-20">
         <!-- <Icon icon="ep:plus" class="mr-5px" /> fault {{ index + 1 }} -->
@@ -185,7 +127,12 @@
       <el-button v-show="formData.faults.length < 50" type="primary" @click="addFault()"
         >添加故障照片
       </el-button>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">提交报修</el-button>
+      <el-button @click="editForm('update')" type="primary" :disabled="formLoading"
+        >保存报修</el-button
+      >
+      <el-button @click="editForm('submit')" type="primary" :disabled="formLoading"
+        >提交报修</el-button
+      >
     </el-form-item>
   </el-form>
 </template>
@@ -194,7 +141,7 @@ import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as ReparationpartAPI from '@/api/insurance/reparationpart'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
-import { getUserProfile } from '@/api/system/user/profile'
+import { propTypes } from '@/utils/propTypes'
 import * as DeptApi from '@/api/system/dept'
 import * as UserApi from '@/api/system/user'
 
@@ -204,6 +151,14 @@ const { delView } = useTagsViewStore() // 视图操作
 const { currentRoute } = useRouter() // 路由
 const router = useRouter() // 路由
 const { wsCache } = useCache()
+
+const { query } = useRoute() // 查询参数
+
+const props = defineProps({
+  id: propTypes.number.def(undefined)
+})
+const detailLoading = ref(false) // 表单的加载中
+const queryId = query.id as unknown as number // 从 URL 传递过来的 id 编号
 
 const user = wsCache.get(CACHE_KEY.USER)
 const userName = user.user.nickname ? user.user.nickname : 'Admin'
@@ -228,6 +183,7 @@ const formData = ref({
   registrationId: undefined,
   processInstanceId: undefined,
   totalPrice: 0,
+  marks: '',
   parts: [
     {
       id: undefined,
@@ -266,7 +222,7 @@ const formRef = ref() // 表单 Ref
 const maintainDeptList = ref<any[]>([]) // 维保公司列表
 const endusageDeptList = ref<any[]>([]) // 电梯使用单位列表
 /** 提交表单 */
-const submitForm = async () => {
+const editForm = async (action) => {
   // 校验表单
   if (!formRef) return
   const valid = await formRef.value.validate()
@@ -274,9 +230,14 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
+    let reparationpartId
     const data = formData.value as unknown as ReparationpartAPI.ReparationPartVO
-    const reparationpartId = await ReparationpartAPI.createReparationPart(data)
-    message.success('发起成功')
+    if ('update' === action) {
+      reparationpartId = await ReparationpartAPI.updateReparationPart(data)
+    } else if ('submit' === action) {
+      reparationpartId = await ReparationpartAPI.submitUpdatedReparationPart(data)
+    }
+    message.success('修改成功')
     // 关闭当前 Tab
     delView(unref(currentRoute))
     router.push({
@@ -351,19 +312,29 @@ watch(
     immediate: true
   }
 )
+
 /** 获得数据 */
 const getInfo = async () => {
-  const userProfile = await getUserProfile()
-  formData.value.userMobile = userProfile.mobile
-  formData.value.userDeptId = userProfile.dept.id
-  formData.value.userDeptName = userProfile.dept.name
-  // formData.value.maintainDeptId = userProfile.dept.id
-  // formData.value.maintainDeptName = userProfile.dept.name
-
-  // 加载用户列表
-  maintainDeptList.value = await DeptApi.getMaintainDeptList()
-  endusageDeptList.value = await DeptApi.getEndusageDeptList()
+  detailLoading.value = true
+  try {
+    formData.value = await ReparationpartAPI.getReparationPart(props.id || queryId)
+    const editable = formData.value.marks
+    if (editable.indexOf('form_editable') < 0) {
+      router.push({
+        name: 'ReparationpartDetail',
+        query: {
+          id: formData.value.id
+        }
+      })
+    }
+    // 加载用户列表
+    maintainDeptList.value = await DeptApi.getMaintainDeptList()
+    endusageDeptList.value = await DeptApi.getEndusageDeptList()
+  } finally {
+    detailLoading.value = false
+  }
 }
+defineExpose({ open: getInfo }) // 提供 open 方法，用于打开弹窗
 const onMaintainDeptChanged = (id?: number) => {
   const found = maintainDeptList.value.find((v) => v.id === id)
   if (found) {

@@ -62,6 +62,29 @@ export const updateReparationPart = async (data: ReparationPartVO) => {
   return await request.put({ url: '/insurance/reparationpart/update', data })
 }
 
+// 修改电梯报修申请
+export const submitUpdatedReparationPart = async (data: ReparationPartVO) => {
+  return await request.put({ url: '/insurance/reparationpart/updatesubmit', data })
+}
+
+// 修改电梯报修申请
+export const endusageupdate = async (data: ReparationPartVO) => {
+  return await request.put({ url: '/insurance/reparationpart/endusageupdate', data })
+}
+
+// 修改电梯报修申请
+export const endusageupdatesubmit = async (data: ReparationPartVO) => {
+  return await request.put({ url: '/insurance/reparationpart/endusageupdatesubmit', data })
+}
+// 修改电梯报修申请
+export const postrepairupdate = async (data: ReparationPartVO) => {
+  return await request.put({ url: '/insurance/reparationpart/postrepairupdate', data })
+}
+
+// 修改电梯报修申请
+export const postrepairupdatesubmit = async (data: ReparationPartVO) => {
+  return await request.put({ url: '/insurance/reparationpart/postrepairupdatesubmit', data })
+}
 // 删除电梯报修申请
 export const deleteReparationPart = async (id: number) => {
   return await request.delete({ url: '/insurance/reparationpart/delete?id=' + id })
