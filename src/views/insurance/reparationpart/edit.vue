@@ -195,7 +195,7 @@
   </el-form>
 </template>
 <script setup name="BpmOALeaveCreate" lang="ts">
-//import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as ReparationpartAPI from '@/api/insurance/reparationpart'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'

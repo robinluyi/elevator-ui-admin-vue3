@@ -19,16 +19,22 @@
         <el-input v-model="formData.userNickname" placeholder="请输入报险人姓名" disabled />
       </el-form-item>
       <el-form-item label="报险人手机号码" prop="userMobile">
-        <el-input v-model="formData.userMobile" placeholder="请输入报险人手机号码" maxlength="11" />
+        <el-input
+          v-model="formData.userMobile"
+          placeholder="请输入报险人手机号码"
+          maxlength="11"
+          disabled
+        />
       </el-form-item>
       <el-form-item label="报险人所在单位" prop="userDeptName">
         <el-input v-model="formData.userDeptName" placeholder="" disabled />
       </el-form-item>
-      <el-form-item label="使用单位" prop="endusageDeptId">
+      <el-form-item label="使用单位" prop="endusageDeptId" disabled>
         <el-select
           v-model="formData.endusageDeptId"
           placeholder="请选择使用单位"
           @change="onEndUsageChanged"
+          disabled
         >
           <el-option
             v-for="endusage in endusageDeptList"
@@ -52,19 +58,21 @@
         <el-input
           v-model="formData.endusageDeptManagerPhone"
           placeholder="请输入使用单位负责人手机号码"
+          disabled
         />
       </el-form-item>
       <el-form-item label="电梯id" prop="elevtrId">
-        <el-input v-model="formData.elevtrId" placeholder="请输入电梯id" />
+        <el-input v-model="formData.elevtrId" placeholder="请输入电梯id" disabled />
       </el-form-item>
       <el-form-item label="梯号" prop="elevtrNumber">
-        <el-input v-model="formData.elevtrNumber" placeholder="请输入梯号" />
+        <el-input v-model="formData.elevtrNumber" placeholder="请输入梯号" disabled />
       </el-form-item>
-      <el-form-item label="维保单位" prop="maintainDeptId">
+      <el-form-item label="维保单位" prop="maintainDeptId" disabled>
         <el-select
           v-model="formData.maintainDeptId"
           placeholder="请选择维保单位"
           @change="onMaintainDeptChanged"
+          disabled
         >
           <el-option
             v-for="maintain in maintainDeptList"
@@ -75,10 +83,55 @@
         </el-select>
       </el-form-item>
       <el-form-item label="注册代码" prop="registrationId">
-        <el-input v-model="formData.registrationId" placeholder="请输入注册代码" />
+        <el-input v-model="formData.registrationId" placeholder="请输入注册代码" disabled />
       </el-form-item>
       <el-form-item label="配件总价格" prop="totalPrice">
         <el-input v-model="formData.totalPrice" placeholder="" disabled />
+      </el-form-item>
+    </el-card>
+
+    <div v-for="(fault, index) in formData.faults" :key="'part' + index">
+      <ContentWrap>
+        <div class="part-fields">
+          <el-descriptions :column="1" border direction="horizontal">
+            <el-descriptions-item label="小区照片">
+              <el-image
+                style="width: 200px; height: 200px"
+                :src="fault.communityPic"
+                fit="contain"
+              />
+            </el-descriptions-item>
+            <el-descriptions-item label="单元照片">
+              <el-image style="width: 200px; height: 200px" :src="fault.unitPic" fit="contain" />
+            </el-descriptions-item>
+            <el-descriptions-item label="电梯照片">
+              <el-image style="width: 200px; height: 200px" :src="fault.elevtrPic" fit="contain" />
+            </el-descriptions-item>
+            <el-descriptions-item label="故障现场照片1">
+              <el-image style="width: 200px; height: 200px" :src="fault.faultPic" fit="contain" />
+            </el-descriptions-item>
+            <el-descriptions-item label="故障现场照片1">
+              <el-image style="width: 200px; height: 200px" :src="fault.faultPic2" fit="contain" />
+            </el-descriptions-item>
+            <el-descriptions-item label="故障现场照片1">
+              <el-image style="width: 200px; height: 200px" :src="fault.faultPic3" fit="contain" />
+            </el-descriptions-item>
+            <el-descriptions-item label="故障现场照片1">
+              <el-image style="width: 200px; height: 200px" :src="fault.faultPic4" fit="contain" />
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
+      </ContentWrap>
+    </div>
+    <el-card class="mb-20">
+      <!-- <Icon icon="ep:plus" class="mr-5px" /> fault {{ index + 1 }} -->
+      <div class="userConfirmPic-fields">
+        <el-form-item label="物业确认照片" :prop="endusageConfirmPic">
+          <UploadImg v-model="formData.endusageConfirmPic" :limit="5" />
+        </el-form-item>
+      </div>
+      <el-form-item label="留言" prop="reason">
+        <el-input v-model="formData.reason" placeholder="物业已确认!" />
       </el-form-item>
     </el-card>
 
@@ -208,15 +261,15 @@ const getInfo = async () => {
   detailLoading.value = true
   try {
     formData.value = await ReparationpartAPI.getReparationPart(props.id || queryId)
-    const editable = formData.value.marks
-    if (editable.indexOf('form_editable') < 0) {
-      router.push({
-        name: 'ReparationpartDetail',
-        query: {
-          id: formData.value.id
-        }
-      })
-    }
+    // const editable = formData.value.marks
+    // if (editable.indexOf('post_enduser_confirm_editable') < 0) {
+    //   router.push({
+    //     name: 'ReparationpartDetail',
+    //     query: {
+    //       id: formData.value.id
+    //     }
+    //   })
+    // }
     // 加载用户列表
     maintainDeptList.value = await DeptApi.getMaintainDeptList()
     endusageDeptList.value = await DeptApi.getEndusageDeptList()

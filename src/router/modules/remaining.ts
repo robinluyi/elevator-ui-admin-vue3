@@ -400,7 +400,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
         }
       },
       {
-        path: '/insurance/reparationpart/endusageconfim',
+        path: '/insurance/reparationpart/endusageconfirm',
         component: () => import('@/views/insurance/reparationpart/endusageconfim.vue'),
         name: 'ReparationpartEndusageConfirm',
         meta: {

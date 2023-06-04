@@ -48,6 +48,21 @@ export const getReparationPartPage = async (params) => {
   return await request.get({ url: '/insurance/reparationpart/page', params })
 }
 
+// 查询我的电梯报修申请列表
+export const getMyReparationPartPage = async (params) => {
+  return await request.get({ url: '/insurance/reparationpart/creatorpage', params })
+}
+
+// 查询物业电梯报修申请列表
+export const getEndusageReparationPartPage = async (params) => {
+  return await request.get({ url: '/insurance/reparationpart/endusagepage', params })
+}
+
+// 查询所有电梯报修申请列表
+export const getAllReparationPartPage = async (params) => {
+  return await request.get({ url: '/insurance/reparationpart/inspage', params })
+}
+
 // 查询电梯报修申请详情
 export const getReparationPart = async (id: number) => {
   return await request.get({ url: '/insurance/reparationpart/get?id=' + id })
